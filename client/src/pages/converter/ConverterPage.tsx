@@ -2,18 +2,16 @@ import React, { useEffect, useState } from 'react';
 import type { AxiosError, AxiosResponse } from 'axios';
 import axios from 'axios';
 
-type CurrencyRate = {
-  currency: string;
-  rate: number;
-};
-
 type CurrenciesResponse = {
   result: string;
   conversion_rates: Record<string, number>;
 };
 
 function ConverterPage(): JSX.Element {
-  const [currencies, setСurrencies] = useState<CurrencyRate[]>([]);
+  const [rates, setRates] = useState<Record<string, number>>({});
+  const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
+  const [amountRUB, setAmountRUB] = useState<number>(0);
+  const [amountOther, setAmountOther] = useState<number>(0);
 
   const getAllСurrencies = async (): Promise<void> => {
     try {
@@ -22,11 +20,11 @@ function ConverterPage(): JSX.Element {
       );
       if (response.status === 200) {
         const requiredCurrencies = ['RUB', 'USD', 'EUR', 'GBP'];
-        const filteredRates = requiredCurrencies.map((currency) => ({
-          currency,
-          rate: response.data.conversion_rates[currency],
-        }));
-        setСurrencies(filteredRates);
+        const filteredRates: Record<string, number> = {};
+        requiredCurrencies.forEach((currency) => {
+          filteredRates[currency] = response.data.conversion_rates[currency];
+        });
+        setRates(filteredRates);
       }
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -37,20 +35,51 @@ function ConverterPage(): JSX.Element {
     }
   };
 
-    // useEffect(() => {
-    //   void getAllСurrencies();
-    // }, []);
+  // useEffect(() => {
+  //   void getAllСurrencies();
+  // }, []);
+
+  const onHandleAmountRUBChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const value = parseFloat(e.target.value) || 0;
+    setAmountRUB(value);
+    if (rates[selectedCurrency]) {
+      setAmountOther(parseFloat((value * rates[selectedCurrency]).toFixed(5)));
+    }
+  };
+
+  const onHandleAmountOtherChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const value = parseFloat(e.target.value) || 0;
+    setAmountOther(value);
+    if (rates[selectedCurrency]) {
+      setAmountRUB(parseFloat((value / rates[selectedCurrency]).toFixed(5)));
+    }
+  };
+
+  const onHandleSelectedCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    const currency = e.target.value;
+    setSelectedCurrency(currency);
+    if (rates[currency]) {
+      setAmountOther(parseFloat((amountRUB * rates[currency]).toFixed(5)));
+    }
+  };
 
   return (
     <div>
-      <h1>Конвертер валют</h1>
-      <ul>
-        {currencies.map((item) => (
-          <li key={item.currency}>
-            {item.currency}: {item.rate}
-          </li>
-        ))}
-      </ul>
+      <h1>Currency Converter</h1>
+      <div>
+        <input type="number" value={amountRUB} onChange={onHandleAmountRUBChange} />
+        <span>RUB</span>
+      </div>
+      <div>
+        <input type="number" value={amountOther} onChange={onHandleAmountOtherChange} />
+        <select value={selectedCurrency} onChange={onHandleSelectedCurrencyChange}>
+          {['USD', 'EUR', 'GBP'].map((currency) => (
+            <option key={currency} value={currency}>
+              {currency}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 }
