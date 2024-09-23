@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import type { AxiosError, AxiosResponse } from 'axios';
 import axios from 'axios';
+import './ui/ConverterPage.css';
+import { AppContext } from '../../app/provider/AppContext';
 
 type CurrenciesResponse = {
   result: string;
@@ -8,6 +10,7 @@ type CurrenciesResponse = {
 };
 
 function ConverterPage(): JSX.Element {
+  const { user } = useContext(AppContext);
   const [rates, setRates] = useState<Record<string, number>>({});
   const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
   const [amountRUB, setAmountRUB] = useState<number>(0);
@@ -65,20 +68,34 @@ function ConverterPage(): JSX.Element {
 
   return (
     <div>
-      <h1>Currency Converter</h1>
-      <div>
-        <input type="number" value={amountRUB} onChange={onHandleAmountRUBChange} />
-        <span>RUB</span>
-      </div>
-      <div>
-        <input type="number" value={amountOther} onChange={onHandleAmountOtherChange} />
-        <select value={selectedCurrency} onChange={onHandleSelectedCurrencyChange}>
-          {['USD', 'EUR', 'GBP'].map((currency) => (
-            <option key={currency} value={currency}>
-              {currency}
-            </option>
-          ))}
-        </select>
+      <h1 className="converter__title">Currency Converter</h1>
+      <h2 className="converter__subtitle">{`Favorite meme of ${user?.name}:`}</h2>
+      <img className='converter__img' src={`${user?.favoriteMeme}`} alt="favoriteMeme" />
+      <div className="converter-block">
+        <div className="converter-block-RUB">
+          <span className="converter-block-RUB__title">RUB</span>
+          <input
+            className="converter-block__input"
+            type="number"
+            value={amountRUB}
+            onChange={onHandleAmountRUBChange}
+          />
+        </div>
+        <div className="converter-block-other">
+          <select className='converter-block__select' value={selectedCurrency} onChange={onHandleSelectedCurrencyChange}>
+            {['USD', 'EUR', 'GBP'].map((currency) => (
+              <option key={currency} value={currency}>
+                {currency}
+              </option>
+            ))}
+          </select>
+          <input
+            className="converter-block__input"
+            type="number"
+            value={amountOther}
+            onChange={onHandleAmountOtherChange}
+          />
+        </div>
       </div>
     </div>
   );

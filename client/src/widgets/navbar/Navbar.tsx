@@ -5,6 +5,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import type { AxiosError, AxiosResponse } from 'axios';
 import { AppContext } from '../../app/provider/AppContext';
 import axiosRequest from '../../features/api/axiosInstance';
+import './ui/Navbar.css';
 
 type LogoutResponse = {
   message: string;
@@ -32,12 +33,6 @@ function Navbar(): JSX.Element {
 
   return (
     <div>
-      {user && <h1>{`Welcome, ${user.name}!`}</h1>}
-      {user && (
-        <button type="button" onClick={onHandleLogout}>
-          Log out
-        </button>
-      )}
       <ul className="navbar">
         <li className="navbar__link">
           <NavLink to="/">Home</NavLink>
@@ -57,11 +52,14 @@ function Navbar(): JSX.Element {
             <NavLink to="/converter">Currency Converter</NavLink>
           </li>
         )}
-        {/* {user && (
+        {user && <li className="navbar__link">{`Welcome, ${user.name}!`}</li>}
+        {user && (
           <li className="navbar__link">
-            <NavLink to="/add-books">Add books</NavLink>
+            <button className='navbar__button' type="button" onClick={onHandleLogout}>
+              Log out
+            </button>
           </li>
-        )} */}
+        )}
       </ul>
     </div>
   );

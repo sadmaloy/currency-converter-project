@@ -7,6 +7,7 @@ import axiosRequest, { setAccessToken } from '../../features/api/axiosInstance';
 
 import { AppContext } from '../../app/provider/AppContext';
 import type { User } from '../../entities/User/types/user';
+import './ui/RegistrationPage.css';
 
 type UserResponse = {
   message: string;
@@ -66,7 +67,7 @@ function RegistrationPage(): JSX.Element {
     } catch (error) {
       const axiosError = error as AxiosError;
       if (axios.isAxiosError(axiosError)) {
-        setErrorMess(axiosError.message);
+        setErrorMess(axiosError.response?.data.message);
         throw new Error(axiosError.message);
       }
       throw new Error('Some error');
@@ -74,9 +75,9 @@ function RegistrationPage(): JSX.Element {
   };
 
   return (
-    <div>
-      <h1>Registration</h1>
-      {errorMess && <p>{errorMess}</p>}
+    <div className="registration">
+      <h1 className="registration__title">Registration</h1>
+      {errorMess && <p className="registration__error">{errorMess}</p>}
       <form onSubmit={onHandleSubmit} className="registration-form">
         <input
           type="text"
@@ -127,7 +128,9 @@ function RegistrationPage(): JSX.Element {
           placeholder="Enter your favorite meme"
           className="registration-form__input"
         />
-        <button type="submit">Sign in</button>
+        <button type="submit" className="registration-form__button">
+          Sign in
+        </button>
       </form>
     </div>
   );

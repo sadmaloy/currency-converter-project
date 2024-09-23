@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import axiosRequest, { setAccessToken } from '../../features/api/axiosInstance';
 import { AppContext } from '../../app/provider/AppContext';
 import type { User } from '../../entities/User/types/user';
+import './ui/AuthorizationPage.css';
 
 type UserResponse = {
   message: string;
@@ -43,32 +44,34 @@ function AuthorizationPage(): JSX.Element {
     } catch (error) {
       const axiosError = error as AxiosError;
       if (axios.isAxiosError(axiosError)) {
-        setErrorMess(axiosError.message);
+        setErrorMess(axiosError.response?.data.message);
         throw new Error(axiosError.message);
       }
       throw new Error('Some error');
     }
   };
   return (
-    <div>
-      <h1>Authorization</h1>
-      {errorMess && <p>{errorMess}</p>}
-      <form onSubmit={onHandleSubmit} className="registration-form">
+    <div className="authorization">
+      <h1 className="authorization__title">Authorization</h1>
+      {errorMess && <p className="authorization__error">{errorMess}</p>}
+      <form onSubmit={onHandleSubmit} className="authorization-form">
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter a email"
-          className="registration-form__input"
+          className="authorization-form__input"
         />
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Enter a password"
-          className="registration-form__input"
+          className="authorization-form__input"
         />
-        <button type="submit">Sign in</button>
+        <button type="submit" className="authorization-form__button">
+          Sign in
+        </button>
       </form>
     </div>
   );
